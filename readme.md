@@ -6,6 +6,7 @@
 * 单机双人对战，后期加入网络玩家和实现联机对战。
 * 本地AI对战，后期加入网络玩家可与远程AI交互
 
+这里可以查看基本的效果：[观棋不语](http://htmlpreview.github.io/?https://raw.githubusercontent.com/JimmyFromSYSU/ChineseChess_Javascript_UI/master/index.html)
 
 ## 基本元素
 * game：整个游戏的接入口。对所有方形棋盘的游戏进行了抽象，包括黑白棋，五子棋，围棋等。
