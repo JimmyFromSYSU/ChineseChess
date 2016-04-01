@@ -1,8 +1,7 @@
 /***********************************\
 * 移动规则
 \***********************************/
-
-// 检查位置 p  是否在左上角为[r,c]，大小为(h, w)的矩形区域中
+// 检查位置p是否在左上角为[r,c]，大小为(h, w)的矩形区域中
 function inRegion(p, l, s){
 	if(p.r>=l.r && p.r< l.r+s.h && p.c >= l.c && p.c < l.c + s.w) return true;
 	else return false;
@@ -122,9 +121,21 @@ var ChineseChessGame = {
 	imgFileName:	["jiang.png",	"ju.png",	"ma.png",	"xiang.png",	"shi.png",	"pao.png",	"zu.png"],
 	chessType:		["jiang",		"ju",		"ma",		"xiang",		"shi",		"pao",		"zu"],
 	chessColor: ['b', 'r'],
-	createNew: function(area, cell_size, cell_img_size,  box_img_size, b_img_w, b_img_h, chess_img_size, img_dir){
-		var game = SquareChessGame.createNew(area, cell_size, cell_img_size,  box_img_size, b_img_w, b_img_h, chess_img_size, img_dir, bg_color,cell_size/2, cell_size/2);
+	createNew: function(
+			area, 
+			cell_size, cell_img_size,  
+			box_img_size, b_img_w, b_img_h, 
+			chess_img_size, img_dir
+			){
 
+		var game = SquareChessGame.createNew(
+				area,
+				cell_size, cell_img_size,  
+				box_img_size, b_img_w, b_img_h, 
+				chess_img_size, 
+				img_dir, 
+				bg_color,
+				cell_size/2, cell_size/2);
 
 		/***********************************\
 		 * 游戏参数计算
@@ -146,10 +157,10 @@ var ChineseChessGame = {
 		game.UI_playing = false;
 
 		// 设置鼠标跟随框 
-		game.moveMouse = function(e){
+		game.moveBoxToMouse = function(e){
 			if(game.UI_playing == false) return;
 			var p = {x:e.offsetX, y:e.offsetY};
-			if(p.x>=0 && p.x < game.w && p.y>=0 && p.y< game.h){
+			if(p.x>=0 && p.x < w && p.y>=0 && p.y< h){
 				var now  = game.getClickPos(p, cell_size/2);
 				if(now.r < 0 || now.r >= n_row) return;
 				if(now.c < 0 || now.c >= n_col) return;
@@ -160,7 +171,7 @@ var ChineseChessGame = {
 		}
 
 		game.fix = function(){
-			game.moveMouse = null;
+			game.moveBoxToMouse = null;
 			game.hide(game.box1);	
 			game.hide(game.box2);	
 		}
@@ -168,19 +179,20 @@ var ChineseChessGame = {
 		// 移动棋子
 		// pre-condition：移动绝对合法，已通过检验
 		game.moveOnce = function(step) {
-				game.setChessTo(game.box, step.to);
+			game.setChessTo(game.box, step.to);	
+			var eat_chess = game.getChess(step.to);
+
+			game.updateChess = function(){
+				game.hide(eat_chess);
+				tmp_chess.sprite.z = 1;
+			}
+
+			var tmp_chess = chess[step.from.r][step.from.c];
 				
-				eat_chess = game.getChess(step.to);
-
-				game.updateChess = function(){
-					game.hide(eat_chess);
-					tmp_chess.sprite.z = 1;
-				}
-
-				tmp_chess = chess[step.from.r][step.from.c];
-				game.moveChessTo(tmp_chess, step.to);
-				chess[step.from.r][step.from.c] = null;
-				chess[step.to.r][step.to.c] = tmp_chess; 
+			game.moveChessTo(tmp_chess, step.to);
+				
+			chess[step.from.r][step.from.c] = null;
+			chess[step.to.r][step.to.c] = tmp_chess; 
 		}
 
 		/***********************************\
@@ -225,13 +237,12 @@ var ChineseChessGame = {
 		 * run 
 		\***********************************/
 		game.run = function(crafty){
-			Crafty.init(game.w, game.h, document.getElementById(area));
+			Crafty.init(w, h, document.getElementById(area));
 			/***********************************\
 			 * board 生成 
 			\***********************************/
-			game.loadBoard();
-			//game.sprite.bind('MouseUp', game.control);
-			game.sprite.bind('MouseMove', game.moveMouse);
+			loadBoard();
+			game.sprite.bind('MouseMove', game.moveBoxToMouse);
 
 
 			/***********************************\
