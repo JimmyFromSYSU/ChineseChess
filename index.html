@@ -1,0 +1,53 @@
+<html>
+
+<head>
+	<!-- 该网页定位为AI程序对战提供UI显示以便于调试，由于双方均为AI，用户只做观战，故名“观棋不语” -->
+	<title>观棋不语 by 南方小智</title>			
+    <link rel="shortcut icon" href="./static/img/favicon.ico" />
+</head>
+
+<body bgcolor="#B6A69A">
+    <div id="game" style="margin-top:30px;margin-left:auto;margin-right:auto;"></div>
+
+    <script type="text/javascript" src="./static/js/crafty/crafty-min.js"></script>
+
+    <script type="text/javascript" src="./static/js/chess/chess.js"></script>
+    <script type="text/javascript" src="./static/js/chess/chessplayer.js"></script>
+    <script type="text/javascript" src="./static/js/chess/cchess.js"></script>
+
+    <script>
+
+        ///////////////////////////////////////////////
+        // 外部的调用代码
+        ///////////////////////////////////////////////
+        window.onload = function()
+        {
+            var game = ChineseChessGame.createNew(
+                area = "game",						// 游戏的显示区域
+                cell_size = 60,						// 显示时每个格子的边长
+                cell_img_size = 50,					// 在图片中每个格子的边长
+                box_img_size = 57,					// 选中框图片的边长
+                b_img_w = 500,						// 棋盘图片的宽度
+                b_img_h = 544,						// 棋盘图片的高度
+                chess_img_size = 50,				// 棋子图片的边长
+                img_dir = "./static/img/chess/",	// 所有图片所在的根目录，图片路径和名字按照既定规则命名
+                bg_color = "#D0BD9B"				// 外围背景颜色，一般设置为棋盘的颜色
+            );
+
+            game.addPlayer(UI_Player.createNew(1)); // 添加一个先手UI玩家，玩家ID为1
+													// 注意先手与后手只和addPlayer的次序相关，与玩家ID无关。
+													// 玩家ID决定玩家所在方位，0为上方，1为下方
+
+            game.addPlayer(UI_Player.createNew(0)); // 添加另一个后手UI玩家，玩家ID为0
+
+            game.run();								// 开始奔跑游戏^_^，所有游戏只能奔跑一次（调用了Crafty.js的单例）
+													// 多次奔跑会覆盖前面的游戏并可能导致不可预测的行为。
+
+													// 如果只希望显示棋盘和棋子布局而不加入游戏流程，使用game.show() (仍在开发中)
+													// 可以多个游戏可以各自show一次，互不影响。
+        };
+    </script>
+
+</body>
+
+</html>
