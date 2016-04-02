@@ -118,9 +118,10 @@ function normalCheck(chess, old, now)
 
 
 var ChineseChessGame = {
-	imgFileName:	["jiang.png",	"ju.png",	"ma.png",	"xiang.png",	"shi.png",	"pao.png",	"zu.png"],
-	chessType:		["jiang",		"ju",		"ma",		"xiang",		"shi",		"pao",		"zu"],
-	chessColor: ['b', 'r'],
+	//imgFileName:	["jiang.png",	"ju.png",	"ma.png",	"xiang.png",	"shi.png",	"pao.png",	"zu.png"],
+	//chessType:		["jiang",		"ju",		"ma",		"xiang",		"shi",		"pao",		"zu"],
+	//chessColor: ['b', 'r'],
+	
 	createNew: function(
 			area, 
 			cell_size, cell_img_size,  
@@ -140,6 +141,16 @@ var ChineseChessGame = {
 		/***********************************\
 		 * 游戏参数计算
 		\***********************************/
+		getChessType = function(c){
+			if(c=='j' || c== 'J') return "ju";
+			if(c=='m' || c== 'M') return "ma";
+			if(c=='x' || c== 'X') return "xiang";
+			if(c=='s' || c== 'S') return "shi";
+			if(c=='k' || c== 'K') return "jiang";
+			if(c=='p' || c== 'P') return "pao";
+			if(c=='z' || c== 'Z') return "zu";
+		}
+
 		// 棋网格盘大小
 		var n_row = 10;
 		var n_col = 9;
@@ -207,31 +218,25 @@ var ChineseChessGame = {
 		/***********************************\
 		 * 初始化棋子位置，加载棋子和棋盘精灵
 		\***********************************/
-		var pos ={ 
-			player :{b:0,r:1},
-			b : [
-				[[0,4]],
-			[[0,0],[0,8]],
-			[[0,1],[0,7]],
-			[[0,2],[0,6]],
-			[[0,3],[0,5]],
-			[[2,1],[2,7]],
-			[[3,0], [3,2], [3,4], [3,6], [3,8] ]
-				],
-			r : [
-				[[9,4]],
-			[[9,0],[9,8]],
-			[[9,1],[9,7]],
-			[[9,2],[9,6]],
-			[[9,3],[9,5]],
-			[[7,1],[7,7]],
-			[[6,0], [6,2], [6,4], [6,6], [6,8] ]
-				],
-		};
+		// 大写字母 : player = 0, 位于上方
+		// 小写字母 : player = 1, 位于下方
+		var chessPos = 
+			"JMXSKSXMJ" + 
+			"000000000" + 
+			"0P00000P0" + 
+			"Z0Z0Z0Z0Z" + 
+			"000000000" + 
+			"000000000" + 
+			"z0z0z0z0z" + 
+			"0p00000p0" + 
+			"000000000" + 
+			"jmxsksxmj";	
 
-		game.setPos = function(newPos){
-			pos = newPos;
+		game.setInitPos = function(newPos){
+			chessPos = newPos;
 		}
+
+		game.blackAtTop = true;
 
 		/***********************************\
 		 * run 
@@ -259,22 +264,33 @@ var ChineseChessGame = {
 			/***********************************\
 			 * 棋子 生成 
 			\***********************************/
-			initChess = function (img_file, position, player, type) {
-				for (var i = 0; i < position.length; i++) {
-					var pos = {};
-					pos.r = position[i][0];
-					pos.c = position[i][1];
-					c = ChineseChess.createNew(chess_img_size, img_file, chess_size,  "+", type, player, 0,0, 1);
-					chess[pos.r][pos.c] = c; 
-					c.loadChess(game);
-					game.setChessTo(c, pos);
+			for(var r = 0; r < n_row; r++){
+				for(var c = 0; c < n_col; c++){
+					var index = r*n_col + c;
+					ch = chessPos[index];
+					console.log(ch);
+					if(ch>='A'&&ch<='Z') {
+						player = 0;
+						if(game.blackAtTop) color = 'b';
+						else color = 'r';
+					}
+					else if(ch>='a' && ch<='z') {
+						player = 1;
+						if(game.blackAtTop) color = 'r';
+						else color = 'b';
+					}
+					else continue;
+
+					type = getChessType(ch);
+					img_file = chess_img_dir+color+"_" + type + ".png";
+					console.log(img_file);
+					new_chess = ChineseChess.createNew(chess_img_size, img_file, chess_size,  "棋子", type, player, 0,0, 1);
+					chess[r][c] = new_chess; 
+					new_chess.loadChess(game);
+					game.setChessTo(new_chess, {r:r, c:c});
+
 				}
 			}
-			ChineseChessGame.chessColor.forEach(function(color,s){
-				ChineseChessGame.chessType.forEach(function(type, t){
-					initChess(chess_img_dir + color+"_" + ChineseChessGame.imgFileName[t], pos[color][t], pos['player'][color], type);
-				});
-			});
 
 			game.start();
 		}
