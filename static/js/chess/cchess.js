@@ -169,165 +169,6 @@ function normalCheck(board, old, now, player_id) {
     return true;
 }
 
-/***********************************\
-* 获取所有移动可能
-* board必须合法
-\***********************************/
-getPossibleStep = function(board, from, steps){
-    // 边界越界
-    if (!inRegion(from, {
-        r: 0,
-        c: 0
-    }, {
-        h: 10,
-        w: 9
-    })) return;
-
-    var s = board[from.r][from.c];	
-    if (s == null) return;
-
-	dir_plus= [{dr:0,dc:1},{dr:0,dc:-1},{dr:1,dc:0},{dr:-1,dc:0}];
-	dir_cross = [{dr:1,dc:1},{dr:1,dc:-1},{dr:-1,dc:1},{dr:-1,dc:-1}];
-	dir_cross2 = [{dr:2,dc:2},{dr:2,dc:-2},{dr:-2,dc:2},{dr:-2,dc:-2}];
-	dir_jump = [{dr:1,dc:2},{dr:1,dc:-2},{dr:2,dc:1},{dr:-2,dc:1},{dr:-1,dc:2},{dr:-1,dc:-2},{dr:2,dc:-1},{dr:-2,dc:-1}];
-	
-
-	checkToPosition = function(to, region, must_eat){
-		if (!inRegion(to, region.rc, region.hw)) return false;
-		to_chess = board[to.r][to.c];
-		if(to_chess){
-			if(to_chess.player_id == s.player_id) return false;
-		}
-		else if(must_eat) return false; 
-		return true;
-	}
-	getBlockDir = function(dir){
-		return {dr: dir.dr > 0? dir.dr-1:dir.dr+1,dc: dir.dc > 0? dir.dc-1: dir.dc+1};
-	}
-    if (s.type == "jiang") {
-		dir_plus.forEach(function(dir,index){
-			var to = {};
-			to.r = from.r + dir.dr;
-			to.c = from.c + dir.dc;
-			if(s.player_id == 0) region = {rc:{r:0,c:3},hw:{h:3,w:3}};
-			else if(s.player_id == 1) region = {rc:{r:7,c:3},hw:{h:3,w:3}};
-			if(checkToPosition(to, region,false)){
-				steps.push({from:from, to:to});
-			}
-		});		
-    } else if (s.type == "ju") {
-		dir_plus.forEach(ju_pos = function(dir,index){
-			flag = true;
-			var dis = 1;
-			while(flag){
-				var to = {};
-				to.r = from.r + dir.dr * dis;
-				to.c = from.c + dir.dc * dis;
-				region = {rc:{r:0,c:0},hw:{h:10,w:9}};
-				if(checkToPosition(to, region,false)){
-					steps.push({from:from, to:to});
-					if(board[to.r][to.c]) flag = false;
-				}
-				else flag = false;
-				dis ++;
-			}
-		});
-    } else if (s.type == "pao") {
-		dir_plus.forEach(ju_pos = function(dir,index){
-			cnt = 0;
-			var dis = 1;
-			while(cnt<2){
-				var to = {};
-				to.r = from.r + dir.dr * dis;
-				to.c = from.c + dir.dc * dis;
-				region = {rc:{r:0,c:0},hw:{h:10,w:9}};
-				
-				if (inRegion(to, region.rc, region.hw))
-				{
-					to_chess = board[to.r][to.c];
-					if(cnt == 0 && !to_chess) steps.push({from:from, to:to});
-					if(cnt == 1 && to_chess && to_chess.player_id != s.player_id) steps.push({from:from, to:to});
-					if(to_chess) cnt ++ ;
-				}
-				else { cnt = 3;}
-				dis ++;
-			}
-		});
-
-    } else if (s.type == "ma") {
-		dir_jump.forEach(function(dir,index){
-			var to = {};
-			to.r = from.r + dir.dr;
-			to.c = from.c + dir.dc;
-			b_dir = getBlockDir(dir);
-			block = {};
-			block.r  = from.r + b_dir.dr;
-			block.c  = from.c + b_dir.dc;
-			region = {rc:{r:0,c:0},hw:{h:10,w:9}};
-			if(checkToPosition(to, region,false)){
-				if(!board[block.r][block.c])
-					steps.push({from:from, to:to});
-			}
-		});		
-    } else if (s.type == "shi") {
-		dir_cross.forEach(function(dir,index){
-			var to = {};
-			to.r = from.r + dir.dr;
-			to.c = from.c + dir.dc;
-			if(s.player_id == 0) region = {rc:{r:0,c:3},hw:{h:3,w:3}};
-			else if(s.player_id == 1) region = {rc:{r:7,c:3},hw:{h:3,w:3}};
-			if(checkToPosition(to, region,false)){
-				steps.push({from:from, to:to});
-			}
-		});		
-    } else if (s.type == "xiang") {
-		dir_cross2.forEach(function(dir,index){
-			var to = {};
-			to.r = from.r + dir.dr;
-			to.c = from.c + dir.dc;
-			b_dir = getBlockDir(dir);
-			block = {};
-			block.r  = from.r + b_dir.dr;
-			block.c  = from.c + b_dir.dc;
-			if(s.player_id == 0) region = {rc:{r:0,c:0},hw:{h:5,w:9}};
-			else if(s.player_id == 1) region = {rc:{r:5,c:0},hw:{h:5,w:9}};
-			if(checkToPosition(to, region,false)){
-				if(!board[block.r][block.c])
-					steps.push({from:from, to:to});
-			}
-		});		
-    } else if (s.type == "zu") {
-		dir_plus.forEach(function(dir,index){
-			var to = {};
-			var flag = true;
-			to.r = from.r + dir.dr;
-			to.c = from.c + dir.dc;
-			if (player_id == 0 && dir.dr < 0) flag=false;
-			if (player_id == 1 && dir.dr > 0) flag=false;
-
-			r = dir.dr>0?dir.dr:-dir.dr;
-			c = dir.dc>0?dir.dc:-dir.dc;
-			if (s.player_id == 0 && inRegion(from, {r: 0,c: 0}, {h: 5,w: 9})) {
-				if (dir.dc != 0) flag=false;
-			} else {
-				if (!((r == 0 && c == 1) || (r == 1 && c == 0))) flag=false;
-			}
-
-			if (s.player_id == 1 && inRegion(from, {r: 5,c: 0}, {h: 5,w: 9})) {
-				if (dir.dc != 0) flag=false;
-			} else {
-			    if (!((r == 0 && c == 1) || (r == 1 && c == 0))) flag=false;
-			}
-
-			region = {rc:{r:0,c:0},hw:{h:10,w:9}};
-			if(flag  && checkToPosition(to, region,false)){
-				steps.push({from:from, to:to});
-			}
-		});		
-    }
-
-
-}
 
 /***********************************\
 * 中国象棋游戏
@@ -367,7 +208,7 @@ var ChineseChessGame = {
         /***********************************\
 		 * 棋盘的字符表示
 		\***********************************/
-        getChessType = function(c) {
+        game.getChessType = function(c) {
             if (c == 'j' || c == 'J') return "ju";
             if (c == 'm' || c == 'M') return "ma";
             if (c == 'x' || c == 'X') return "xiang";
@@ -377,25 +218,25 @@ var ChineseChessGame = {
             if (c == 'z' || c == 'Z') return "zu";
         }
 
-		getChessLetter = function(chess){
+		game.getChessLetter = function(chess){
 			if(chess) { 
 				var type = chess.type;
-				if(type == "ju") chess.player_id == 0? 'J':'j';
-				if(type == "ma") chess.player_id == 0? 'M':'m';
-				if(type == "xiang") chess.player_id == 0? 'X':'x';
-				if(type == "shi") chess.player_id == 0? 'S':'s';
-				if(type == "jiang") chess.player_id == 0? 'K':'k';
-				if(type == "pao") chess.player_id == 0? 'P':'p';
-				if(type == "zu") chess.player_id == 0? 'Z':'z';
+				if(type == "ju") return chess.player_id == 0? 'J':'j';
+				if(type == "ma") return chess.player_id == 0? 'M':'m';
+				if(type == "xiang") return chess.player_id == 0? 'X':'x';
+				if(type == "shi") return chess.player_id == 0? 'S':'s';
+				if(type == "jiang") return chess.player_id == 0? 'K':'k';
+				if(type == "pao") return chess.player_id == 0? 'P':'p';
+				if(type == "zu") return chess.player_id == 0? 'Z':'z';
 			}
 			return '0';
 		}
 
-		toString  = function(){
+		game.toString  = function(){
 			var s = "";
 			for(var r = 0; r<n_row; r++){
 				for(var c = 0; c<n_col; c++){
-					s = s + getChessLetter(game.getChess({r:r,c:c}));
+					s = s + "" +  game.getChessLetter(game.getChess({r:r,c:c}));
 				}
 			}
 			return s;
@@ -528,7 +369,7 @@ var ChineseChessGame = {
                         else color = 'b';
                     } else continue;
 
-                    type = getChessType(ch);
+                    type = game.getChessType(ch);
                     img_file = chess_img_dir + color + "_" + type + ".png";
                     new_chess = ChineseChess.createNew(chess_img_size, img_file, chess_size, "棋子", type, player_id, 0, 0, 1);
                     board[r][c] = new_chess;

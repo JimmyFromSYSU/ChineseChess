@@ -12,6 +12,7 @@
 
     <script type="text/javascript" src="./static/js/crafty/crafty-min.js"></script>
 
+    <script type="text/javascript" src="./static/js/chess/AI.js"></script>
     <script type="text/javascript" src="./static/js/chess/chess.js"></script>
     <script type="text/javascript" src="./static/js/chess/chessplayer.js"></script>
     <script type="text/javascript" src="./static/js/chess/cchess.js"></script>
@@ -51,7 +52,8 @@
             game.addPlayer(UI_Player.createNew(1));
 
             // 添加另一个后手UI玩家，玩家ID为0
-            game.addPlayer(UI_Player.createNew(0));
+            // game.addPlayer(UI_Player.createNew(1));
+            game.addPlayer(AI_Player.createNew(0));
 
             // 开始奔跑游戏^_^，所有游戏只能奔跑一次（调用了Crafty.js的单例）
             // 多次奔跑会覆盖前面的游戏并可能导致不可预测的行为。

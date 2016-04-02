@@ -111,9 +111,8 @@ var SquareChessGame = {
 		\***********************************/
 		// 游戏玩家
 		var players = [];
-		// 当前下棋的玩家，只代表玩家下子顺序和在数列中的位置，并不等于玩家ID
-		var now_player_cnt = 0;
 		game.addPlayer = function(player) {
+			if(player.length>=2) return; 
 			players.push(player);
 		}
 
@@ -139,6 +138,11 @@ var SquareChessGame = {
 		* 游戏结束 
 		\***********************************/
 		game.over = function() {
+			// 可能是玩家当前玩家认输
+			if(game.winer.id == NOT_GAMEOVER){
+				game.winer.id = 1 - game.players[now_player_cnt].player_id;
+			}
+
 			players.forEach(function(player, index) {
 				player.finish(game.winner);
 			});
@@ -186,7 +190,7 @@ var SquareChessGame = {
 		document.addEventListener("EndMoveEvent", game.endMove, false);
 
 		/***********************************\
-		* [*] 胜负规则接口 
+		* [*] 游戏结束和胜负规则接口 
 		\***********************************/
 		// 游戏胜者
 		game.winner = {};
