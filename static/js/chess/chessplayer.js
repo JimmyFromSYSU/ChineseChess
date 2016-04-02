@@ -5,6 +5,10 @@
 var Player = {
 	createNew: function(player_id){
 		var player = {};
+		player.now_move = false;
+		player.flag = false;
+		player.player_id = player_id;
+
 		player.prepare = function(game){
 		}
 
@@ -25,9 +29,8 @@ var Player = {
 \***********************************/
 var UI_Player = {
 	createNew: function(player_id){
-		var player = {};
-		player.now_move = false;
-		player.flag = false;
+		var player = Player.createNew(player_id);
+
 		player.prepare = function(game){
 			myControl = function(e){
 				if(player.now_move == false) return;
@@ -37,7 +40,7 @@ var UI_Player = {
 				c = game.getChess(now);
 				// 选择第二颗子
 				if(player.flag == true){
-					if(c && c.player == player_id){
+					if(c && c.player_id == player_id){
 						game.step.from = now;
 						game.setChessTo(game.box, now);
 					}
@@ -51,7 +54,7 @@ var UI_Player = {
 				}
 				// 选择第一颗子
 				else{
-					if(c == null || c.player != player_id){
+					if(c == null || c.player_id != player_id){
 						game.hide(game.box);	
 						player.flag = false;
 					}
