@@ -183,7 +183,19 @@ var AI = {
 
 		//console.log("create ------------------------");
 
+
 		ai.findBestNextStep = function (initStr, player_id, game, call_back){
+
+				ai.toString  = function(){
+					var s = "";
+					for(var r = 0; r<10; r++){
+						for(var c = 0; c<9; c++){
+							s = s + "" +  game.getChessLetter(ai.board[r][c]);
+						}
+					}
+					return s;
+				}
+				ai.set = {};
 				setTimeout(function(){
 					console.log(initStr);		
 					ai.myplayer_id = player_id;
@@ -208,7 +220,7 @@ var AI = {
 	
 						call_back();
 					}
-				}, 100);
+				}, 10);
 
 		}
 
@@ -237,6 +249,10 @@ var AI = {
 		ai.eatStack = [];
 
 		ai.Search = function(board, player_id, deep, now_best){
+			var b_str = ai.toString();
+			result = ai.set[b_str]
+			if(result) return result; 
+
 			//
 			//console.log("ai belong to: " + ai.myplayer_id+  " player_id: "+ player_id + " deep: " + deep);
 			var flag = (player_id != ai.myplayer_id?true:false);
@@ -293,14 +309,19 @@ var AI = {
 				* a-b 剪子
 				\***********************************/
 				if(flag && now_best > best_score) {
-					return {score: best_score, step: best_id>=0?steps[best_id]:null};	
+					result =  {score: best_score, step: best_id>=0?steps[best_id]:null};	
+					ai.set[b_str] = result;
+					return result;
 				}
 				else if(!flag && now_best < best_score){
-					return {score: best_score, step: best_id>=0?steps[best_id]:null};	
+					result =  {score: best_score, step: best_id>=0?steps[best_id]:null};	
+					ai.set[b_str] = result;
+					return result;
 				}
 			}
-		
-			return {score: best_score, step: best_id>=0?steps[best_id]:null};	
+			result =  {score: best_score, step: best_id>=0?steps[best_id]:null};	
+			ai.set[b_str] = result;
+			return result;
 		}
 	
 		ai.evaluate = function(board, last_player_id){
@@ -361,8 +382,8 @@ var AI = {
 
 				ju: [
 					[1190,1220,1200,1200,1200,1200,1200,1220,1190],
-					[1200,1220,1200,1220,1200,1220,1200,1220,1200],
-					[1200,1220,1200,1200,1200,1200,1200,1220,1200],
+					[1210,1220,1200,1220,1200,1220,1200,1220,1210],
+					[1190,1220,1200,1200,1200,1200,1200,1220,1190],
 					[1210,1220,1200,1200,1200,1200,1200,1220,1210],
 					[1220,1230,1220,1230,1200,1230,1220,1230,1220],
 
@@ -376,7 +397,7 @@ var AI = {
 				ma: [
 					[500 ,500 ,500 ,480 ,470 ,480 ,500 ,500 ,500 ],
 					[500 ,510 ,510 ,470 ,480 ,470 ,510 ,510 ,500 ],
-					[500 ,500 ,520 ,500 ,500 ,500 ,520 ,500 ,500 ],
+					[500 ,500 ,520 ,510 ,500 ,510 ,520 ,500 ,500 ],
 					[500 ,520 ,520 ,510 ,500 ,510 ,520 ,520 ,500 ],
 					[500 ,530 ,540 ,530 ,520 ,530 ,540 ,530 ,500 ],
 
