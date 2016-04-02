@@ -304,6 +304,44 @@ var ChineseChessGame = {
             return normalCheck(board, step.from, step.to, player_id);
         }
 
+		game.checkWin = function(){
+			winner  = {};
+			winner.id = -2;
+			
+			flag0 = false;
+			flag1 = false;
+			kpos = {};
+			Kpos = {}
+			for(var r = 0; r < n_row; r++){
+				for(var c = 0; c < n_col; c++){
+					if(board[r][c] && board[r][c].type=="jiang"){
+						if(board[r][c].player_id== 0){
+							flag0 = true;
+							Kpos = {r:r, c:c};
+						}
+						if(board[r][c].player_id== 1){
+							flag1 = true;
+							kpos = {r:r, c:c};
+						}
+					}
+				}
+			}
+
+			// 将帅见面，谁刚走谁输
+
+			if(flag0 == false && flag1== false) winner.id = -1;
+			else if(flag0 == false) winner.id = 1;
+			else if(flag1 == false) winner.id = 0;
+			else{
+				if(Kpos.c == kpos.c){
+					if(countChess(board, kpos, Kpos)==2 ){
+						if(getNowPlayer().player_id==0) winner.id = 1; 
+						else if(getNowPlayer().player_id==1) winner.id = 0; 
+					}
+				}
+			}
+			return winner;
+		}
 
 
         /***********************************\

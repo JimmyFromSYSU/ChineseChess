@@ -1,4 +1,4 @@
-/***********************************\
+ /***********************************\
  * 所有方格棋盘的棋类游戏
  * 棋盘中的元素概念介绍：
  * game： 整个游戏
@@ -111,6 +111,7 @@ var SquareChessGame = {
 		\***********************************/
 		// 游戏玩家
 		var players = [];
+		getNowPlayer = function(){return players[now_player_cnt];}
 		game.addPlayer = function(player) {
 			if(player.length>=2) return; 
 			players.push(player);
@@ -131,6 +132,7 @@ var SquareChessGame = {
 			players.forEach(function(p, index) {
 				p.prepare(game);
 			});
+
 			players[now_player_cnt].moveOnce(game);
 		}
 
@@ -139,7 +141,7 @@ var SquareChessGame = {
 		\***********************************/
 		game.over = function() {
 			// 可能是玩家当前玩家认输
-			if(game.winer.id == NOT_GAMEOVER){
+			if(game.winner.id == NOT_GAMEOVER){
 				game.winer.id = 1 - game.players[now_player_cnt].player_id;
 			}
 
@@ -157,6 +159,7 @@ var SquareChessGame = {
 		game.moveOnce = function(step) {}
 
 		game.startMove = function() {
+			if(now_player_cnt < 0) return;
 			if (game.checkMove(game.step, players[now_player_cnt].player_id) == true) {
 				game.moveOnce(game.step);
 			} else {
@@ -166,11 +169,13 @@ var SquareChessGame = {
 
 		game.endMove = function() {
 			game.updateChess();
+			if(now_player_cnt < 0) return;
 			now_player_cnt++;
 			if (now_player_cnt >= players.length) now_player_cnt = 0;
 			players[now_player_cnt].moveOnce(game);
 			game.winner = game.checkWin();
 			if (game.winner.id != NOT_GAMEOVER) {
+				console.log("game over");
 				document.dispatchEvent(game.GameOverEvent);
 			}
 		}

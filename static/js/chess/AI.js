@@ -19,7 +19,6 @@ getPossibleStepFrom = function(board, from, steps){
 	dir_cross = [{dr:1,dc:1},{dr:1,dc:-1},{dr:-1,dc:1},{dr:-1,dc:-1}];
 	dir_cross2 = [{dr:2,dc:2},{dr:2,dc:-2},{dr:-2,dc:2},{dr:-2,dc:-2}];
 	dir_jump = [{dr:1,dc:2},{dr:1,dc:-2},{dr:2,dc:1},{dr:-2,dc:1},{dr:-1,dc:2},{dr:-1,dc:-2},{dr:2,dc:-1},{dr:-2,dc:-1}];
-	
 
 	checkToPosition = function(to, region, must_eat){
 		if (!inRegion(to, region.rc, region.hw)) return false;
@@ -131,11 +130,13 @@ getPossibleStepFrom = function(board, from, steps){
 			var flag = true;
 			to.r = from.r + dir.dr;
 			to.c = from.c + dir.dc;
-			if (player_id == 0 && dir.dr < 0) flag=false;
-			if (player_id == 1 && dir.dr > 0) flag=false;
+
+			if (s.player_id == 0 && dir.dr < 0) flag=false;
+			if (s.player_id == 1 && dir.dr > 0) flag=false;
 
 			r = dir.dr>0?dir.dr:-dir.dr;
 			c = dir.dc>0?dir.dc:-dir.dc;
+
 			if (s.player_id == 0 && inRegion(from, {r: 0,c: 0}, {h: 5,w: 9})) {
 				if (dir.dc != 0) flag=false;
 			} else {
@@ -177,51 +178,265 @@ var AI = {
 
     createNew: function() {
 		var ai = {};
-		
-		ai.findBestNextStep = function (initStr, player_id, game){
-			console.log(initStr);
+		var MIN_SCORE = -9999
+		var MAX_SCORE = 9999;
 
-			ai.board = strToBoard(initStr,game);
-
-			steps = getAllPossibleStep(board, player_id);
-
-			game.step.from = {};
-			game.step.to = {};
-			game.step.from.r  = steps[0].from.r;
-			game.step.from.c  = steps[0].from.c;
-			game.step.to.r  = steps[0].to.r;
-			game.step.to.c  = steps[0].to.c;
+		//console.log("create ------------------------");
+		ai.board = new Array(10);
+		for (var r = 0; r < 10; r++) {
+			ai.board[r] = new Array(9);
 		}
 
-		strToBoard = function(initStr,game){
-			var board = new Array(10);
-			for (var r = 0; r < 10; r++) {
-				board[r] = new Array(9);
-			}
+		ai.findBestNextStep = function (initStr, player_id, game, call_back){
+				setTimeout(function(){
+					console.log(initStr);		
+					ai.myplayer_id = player_id;
+					ai.strToBoard(initStr,game);
+					/***********************************\
+					* 极大极小搜索入口
+					\***********************************/
+					ai.deep = 4;	
+					ai.eatStack = [];
+					result = ai.Search(ai.board, player_id, ai.deep, MAX_SCORE+1);
+					step = result.step;
 
+					//
+					console.log(result.score + " from: " + step.from.r + " " + step.from.c +
+						" to: " + step.to.r + " " + step.to.c);
+
+					game.step.from = {};
+					game.step.to = {};
+					game.step.from.r  = step.from.r;
+					game.step.from.c  = step.from.c;
+					game.step.to.r  = step.to.r;
+					game.step.to.c  = step.to.c;
+	
+					call_back();
+				}, 100);
+
+		}
+
+		ai.strToBoard = function(initStr,game){
 			index = 0;
+			//console.log("------------------------");
 			for(var r = 0; r<10;r++){
 				for(var c = 0; c<9;c++){
 					ch = initStr[index];
 					if(ch!='0'){
 						chess = {};
-						chess.player_id = (ch>='A' &&ch<='Z'?0:1);
+						chess.player_id = ((ch>='A' &&ch<='Z')?0:1);
 						chess.type = game.getChessType(ch);
-						board[r][c] = chess;
+						ai.board[r][c] = chess;
 					}
 					index ++;
 				}
 			}
-			return board;
 		}
 
-		A_Search = function(board, player_id, deep){
-		}
+		ai.eatStack = [];
 
-		B_Search = function(board, player_id, deep){
-		}
+		ai.Search = function(board, player_id, deep, now_best){
+			//
+			//console.log("ai belong to: " + ai.myplayer_id+  " player_id: "+ player_id + " deep: " + deep);
+			var flag = (player_id != ai.myplayer_id?true:false);
 
-		evaluate = function(board, player_id){
+			var steps = getAllPossibleStep(board, player_id);
+			
+			move = function(board, step){
+				ai.eatStack.push(board[step.to.r][step.to.c]);
+				board[step.to.r][step.to.c] = board[step.from.r][step.from.c];
+				board[step.from.r][step.from.c] = null;
+			}
+
+			unmove = function(board, step){
+				board[step.from.r][step.from.c] = board[step.to.r][step.to.c];
+				board[step.to.r][step.to.c] = ai.eatStack.pop();
+			}
+
+			var best_id = -1;
+			var best_score = MIN_SCORE;
+			if(flag) best_score = MAX_SCORE;
+
+			for(var id = 0; id < steps.length; id++){
+
+				/***********************************\
+				* 更新节点值
+				\***********************************/
+				move(board, steps[id]);
+				//
+				//console.log("step: " + steps[id].from.r + " "  +steps[id].from.c + " " + steps[id].to.r + " " + steps[id].to.c)
+				if(deep==1){
+					//console.log("end");
+					score = ai.evaluate(board, player_id);
+				}
+				else {
+					score = ai.evaluate(board, player_id);
+					//console.log("more score: "  + score);
+					if(Math.abs(score) < 9000){
+						//console.log("more more");
+						result = ai.Search(ai.board, 1-player_id, deep-1, best_score);
+						score = result.score;
+					}
+				}
+				unmove(board, steps[id]);
+				
+				/***********************************\
+				* 更新最优走法
+				\***********************************/
+				if( (!flag && score > best_score) || (flag && score < best_score)){
+					best_id = id;
+					best_score = score;
+				}
+
+				/***********************************\
+				* a-b 剪子
+				\***********************************/
+				if(flag && now_best > best_score) {
+					return {score: best_score, step: best_id>=0?steps[best_id]:null};	
+				}
+				else if(!flag && now_best < best_score){
+					return {score: best_score, step: best_id>=0?steps[best_id]:null};	
+				}
+			}
+		
+			return {score: best_score, step: best_id>=0?steps[best_id]:null};	
+		}
+	
+		ai.evaluate = function(board, last_player_id){
+
+			score_table = {
+				jiang: [
+					[0   ,0   ,0   ,9990,9999,9990,0   ,0   ,0   ],
+					[0   ,0   ,0   ,9980,9980,9980,0   ,0   ,0   ],
+					[0   ,0   ,0   ,9950,9950,9950,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					],
+
+				shi: [
+					[0   ,0   ,0   ,220 ,0   ,220 ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,230 ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,200 ,0   ,200 ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					],
+
+				xiang: [
+					[0   ,0   ,220 ,0   ,0   ,0   ,220 ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[210 ,0   ,0   ,0   ,230 ,0   ,0   ,0   ,210 ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,200 ,0   ,0   ,0   ,200 ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					],
+
+				zu: [
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
+					[150 ,0   ,150 ,0   ,150 ,0   ,150 ,0   ,150 ],
+					[160 ,0   ,160 ,0   ,150 ,0   ,160 ,0   ,160 ],
+
+					[170 ,180 ,170 ,200 ,180 ,200 ,170 ,180 ,170 ],
+					[180 ,190 ,200 ,210 ,210 ,210 ,200 ,190 ,180 ],
+					[190 ,190 ,200 ,220 ,220 ,220 ,210 ,190 ,190 ],
+					[180 ,180 ,200 ,230 ,230 ,230 ,200 ,180 ,180 ],
+					[170 ,180 ,190 ,200 ,200 ,200 ,190 ,180 ,170 ],
+					],
+
+				ju: [
+					[1190,1220,1200,1200,1200,1200,1200,1220,1190],
+					[1200,1220,1200,1220,1200,1220,1200,1220,1200],
+					[1200,1220,1200,1200,1200,1200,1200,1220,1200],
+					[1210,1220,1200,1200,1200,1200,1200,1220,1210],
+					[1220,1230,1220,1230,1200,1230,1220,1230,1220],
+
+					[1230,1230,1230,1240,1230,1240,1230,1230,1230],
+					[1230,1230,1240,1230,1230,1230,1240,1230,1230],
+					[1230,1230,1230,1230,1240,1230,1230,1230,1230],
+					[1230,1230,1230,1230,1240,1230,1230,1230,1230],
+					[1250,1240,1230,1230,1240,1230,1230,1240,1250],
+					],
+
+				ma: [
+					[500 ,500 ,500 ,480 ,470 ,480 ,500 ,500 ,500 ],
+					[500 ,510 ,510 ,470 ,480 ,470 ,510 ,510 ,500 ],
+					[500 ,500 ,520 ,500 ,500 ,500 ,520 ,500 ,500 ],
+					[500 ,520 ,520 ,510 ,500 ,510 ,520 ,520 ,500 ],
+					[500 ,530 ,540 ,530 ,520 ,530 ,540 ,530 ,500 ],
+
+					[530 ,540 ,540 ,540 ,540 ,530 ,540 ,540 ,530 ],
+					[530 ,530 ,540 ,530 ,530 ,530 ,540 ,530 ,530 ],
+					[530 ,530 ,540 ,550 ,530 ,550 ,540 ,530 ,530 ],
+					[520 ,530 ,550 ,530 ,530 ,530 ,550 ,530 ,520 ],
+					[510 ,530 ,540 ,530 ,530 ,530 ,540 ,530 ,510 ],
+					],
+
+				pao: [
+					[500 ,500 ,510 ,500 ,500 ,500 ,510 ,500 ,500 ],
+					[500 ,500 ,500 ,500 ,500 ,500 ,500 ,500 ,500 ],
+					[510 ,520 ,510 ,530 ,541 ,530 ,510 ,520 ,510 ],
+					[500 ,500 ,500 ,500 ,500 ,500 ,500 ,500 ,500 ],
+					[500 ,500 ,500 ,500 ,550 ,500 ,500 ,500 ,500 ],
+					
+					[510 ,510 ,510 ,510 ,540 ,510 ,510 ,510 ,510 ],
+					[510 ,510 ,510 ,500 ,540 ,500 ,510 ,510 ,510 ],
+					[510 ,500 ,510 ,500 ,500 ,500 ,510 ,500 ,510 ],
+					[510 ,500 ,510 ,500 ,500 ,500 ,510 ,500 ,510 ],
+					[550 ,540 ,500 ,500 ,500 ,500 ,500 ,540 ,550 ],
+					]
+
+			};
+			
+			score = 0;
+			Kpos = {};
+			kpos = {};
+			for(var r = 0; r<10;r++){
+				for(var c = 0; c<9;c++){
+					chess = board[r][c];
+					if(chess){
+						if(chess.type == "jiang"){
+							if(chess.player_id==0)Kpos = {r:r,c:c};
+							if(chess.player_id==1)kpos = {r:r,c:c};
+						}
+
+						tr = (chess.player_id==0?r:9-r);
+						//console.log(chess.player_id + " " + ai.myplayer_id);
+						if(chess.player_id == ai.myplayer_id){
+			//				console.log("tr: " + tr + " c: " + c + " score: " + score + " " + score_table[chess.type][tr][c]);
+							score += score_table[chess.type][tr][c];
+						}
+						else
+							score -= score_table[chess.type][tr][c]-50; // 对方的子分值略低，防止AI不断对子
+					}
+				}
+			}
+
+			// 将帅见面，谁刚走谁输
+			if(Math.abs(score)>9000) return score;
+			if(Kpos.c == kpos.c){
+				if(countChess(board, kpos, Kpos)==2 ){
+					if(last_player_id == ai.myplayer_id){
+						score = MIN_SCORE;
+					}
+					else score = MAX_SCORE;
+				}
+			}
+			return score;
 		}
 
         return ai;

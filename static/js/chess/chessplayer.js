@@ -92,25 +92,23 @@ var UI_Player = {
 var AI_Player = {
 	createNew: function(player_id){
 		var player = Player.createNew(player_id);
-		player.ai = null;
 
 		player.prepare = function(game){
-			console.log("create AI");
 			player.ai = AI.createNew();
 		};
 
-
 		player.moveOnce = function(game){
 			player.now_move = true;
-			// save result to game.step.from and game.step.to 
+			player.game = game;
 			initStr = game.toString();
-			console.log("find best move");
-			player.ai.findBestNextStep(initStr,player.player_id, game);
-			player.now_move = false;
-			console.log("finish move");
-			document.dispatchEvent(game.StartMoveEvent);
+			player.ai.findBestNextStep(initStr,player.player_id, game, player.finishStep);
 		}
 
+		player.finishStep = function(){
+			player.now_move = false;
+			document.dispatchEvent(player.game.StartMoveEvent);
+		}
+		
 
 		player.finish = function(winner){}
 
