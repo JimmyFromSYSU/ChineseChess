@@ -182,10 +182,6 @@ var AI = {
 		var MAX_SCORE = 9999;
 
 		//console.log("create ------------------------");
-		ai.board = new Array(10);
-		for (var r = 0; r < 10; r++) {
-			ai.board[r] = new Array(9);
-		}
 
 		ai.findBestNextStep = function (initStr, player_id, game, call_back){
 				setTimeout(function(){
@@ -199,24 +195,29 @@ var AI = {
 					ai.eatStack = [];
 					result = ai.Search(ai.board, player_id, ai.deep, MAX_SCORE+1);
 					step = result.step;
-
-					//
-					console.log(result.score + " from: " + step.from.r + " " + step.from.c +
-						" to: " + step.to.r + " " + step.to.c);
-
-					game.step.from = {};
-					game.step.to = {};
-					game.step.from.r  = step.from.r;
-					game.step.from.c  = step.from.c;
-					game.step.to.r  = step.to.r;
-					game.step.to.c  = step.to.c;
+					if(step){	
+						//
+						//console.log(result.score + " from: " + step.from.r + " " + step.from.c +
+						//	" to: " + step.to.r + " " + step.to.c);
+						game.step.from = {};
+						game.step.to = {};
+						game.step.from.r  = step.from.r;
+						game.step.from.c  = step.from.c;
+						game.step.to.r  = step.to.r;
+						game.step.to.c  = step.to.c;
 	
-					call_back();
+						call_back();
+					}
 				}, 100);
 
 		}
 
 		ai.strToBoard = function(initStr,game){
+			ai.board = new Array(10);
+			for (var r = 0; r < 10; r++) {
+				ai.board[r] = new Array(9);
+			}
+
 			index = 0;
 			//console.log("------------------------");
 			for(var r = 0; r<10;r++){
@@ -253,7 +254,7 @@ var AI = {
 				board[step.to.r][step.to.c] = ai.eatStack.pop();
 			}
 
-			var best_id = -1;
+			var best_id = 0;
 			var best_score = MIN_SCORE;
 			if(flag) best_score = MAX_SCORE;
 
