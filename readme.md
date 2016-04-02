@@ -2,9 +2,15 @@
 
 "观棋不语" 是一款让理查德.狄克.强输得心服口服，无话可说而开发的中国象棋AI。中国象棋UI则是帮助调试"观棋不语"而先行开发的一款基于Javascript和Crafty.js游戏引擎的象棋前端UI。
 
+## Demo
+由于使用htmlpreview进行的展示，可能加载会比较缓慢。
 
-这里可以查看目前效果（已完成前台AI）：[预览"观棋不语"](http://htmlpreview.github.io/?https://raw.githubusercontent.com/JimmyFromSYSU/ChineseChessUI_Javascript/master/index.html)  
-（由于使用htmlpreview进行的展示，可能加载会比较缓慢）
+* 人人对战：[人人对战](http://htmlpreview.github.io/?https://raw.githubusercontent.com/JimmyFromSYSU/ChineseChessUI_Javascript/master/UIUI.html)  
+* 人机对战：[人机对战](http://htmlpreview.github.io/?https://raw.githubusercontent.com/JimmyFromSYSU/ChineseChessUI_Javascript/master/UIAI.html)  
+* 机机对战：[观棋不语](http://htmlpreview.github.io/?https://raw.githubusercontent.com/JimmyFromSYSU/ChineseChessUI_Javascript/master/AIAI.html)  
+* 残局对战：[一虎下山](http://htmlpreview.github.io/?https://raw.githubusercontent.com/JimmyFromSYSU/ChineseChessUI_Javascript/master/end.html)  
+
+在残局对战中，由AI先手解残局。该残局需要9~10步的棋力才能解开，目前前台AI的棋力只有4步。
 
 ## 基本元素
 * game：外部调用的接入点。

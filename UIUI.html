@@ -2,7 +2,7 @@
 
 <head>
     <!-- 该网页定位为AI程序对战提供UI显示以便于调试，由于双方均为AI，用户只做观战，故名“观棋不语” -->
-    <title>观棋不语 by 南方小智</title>
+    <title>UIUI by 南方小智</title>
     <meta charset="UTF-8">
     <link rel="shortcut icon" href="./static/img/favicon.ico" />
 </head>
@@ -33,46 +33,9 @@
                 bg_color = "#D0BD9B" // 外围背景颜色，一般设置为棋盘的颜色
             );
 
-			// 一虎下山
-			game.setInitPos(
-					"000000000" + 
-					"000zSK0z0" + 
-					"00000S000" + 
-					"000000000" + 
-					"0000m0000" + 
-					"000000000" + 
-					"000000000" + 
-					"0000x0000" + 
-					"0Z00JZ000" + 
-					"00xk00000"  
-					);
-
-
-/*
-			game.setInitPos(
-					"J0XSKSX0J" + 
-					"000000000" + 
-					"00M0P0MP0" + 
-					"Z0Z0Z0Z0Z" + 
-					"000000000" + 
-					"000000000" + 
-					"z0z0z0z0z" + 
-					"00m0p0p00" + 
-					"000000000" + 
-					"j0xsksxmj"  
-					);
-*/
-
-
-            // 添加一个先手UI玩家，玩家ID为1
-            // 注意先手与后手只和addPlayer的次序相关，与玩家ID无关。
-            // 玩家ID决定玩家所在方位，0为上方，1为下方
             game.addPlayer(UI_Player.createNew(1));
-            //game.addPlayer(AI_Player.createNew(1));
 
-            // 添加另一个后手UI玩家，玩家ID为0
-            //game.addPlayer(UI_Player.createNew(0));
-            game.addPlayer(AI_Player.createNew(0));
+            game.addPlayer(UI_Player.createNew(0));
 
             // 开始奔跑游戏^_^，所有游戏只能奔跑一次（调用了Crafty.js的单例）
             // 多次奔跑会覆盖前面的游戏并可能导致不可预测的行为。

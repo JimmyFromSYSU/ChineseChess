@@ -197,7 +197,7 @@ var AI = {
 				}
 				ai.set = {};
 				setTimeout(function(){
-					console.log(initStr);		
+					//console.log(initStr);		
 					ai.myplayer_id = player_id;
 					ai.strToBoard(initStr,game);
 					/***********************************\
@@ -209,8 +209,8 @@ var AI = {
 					step = result.step;
 					if(step){	
 						//
-						//console.log(result.score + " from: " + step.from.r + " " + step.from.c +
-						//	" to: " + step.to.r + " " + step.to.c);
+						console.log(result.score + " from: " + step.from.r + " " + step.from.c +
+							" to: " + step.to.r + " " + step.to.c);
 						game.step.from = {};
 						game.step.to = {};
 						game.step.from.r  = step.from.r;
@@ -376,8 +376,8 @@ var AI = {
 					[170 ,180 ,170 ,200 ,180 ,200 ,170 ,180 ,170 ],
 					[180 ,190 ,200 ,210 ,210 ,210 ,200 ,190 ,180 ],
 					[190 ,190 ,200 ,220 ,220 ,220 ,210 ,190 ,190 ],
-					[180 ,180 ,200 ,230 ,230 ,230 ,200 ,180 ,180 ],
-					[170 ,180 ,190 ,200 ,200 ,200 ,190 ,180 ,170 ],
+					[170 ,180 ,200 ,230 ,230 ,230 ,200 ,180 ,170 ],
+					[160 ,160 ,190 ,200 ,200 ,200 ,190 ,160 ,160 ],
 					],
 
 				ju: [
@@ -389,9 +389,9 @@ var AI = {
 
 					[1230,1230,1230,1240,1230,1240,1230,1230,1230],
 					[1230,1230,1240,1230,1230,1230,1240,1230,1230],
-					[1230,1230,1230,1230,1240,1230,1230,1230,1230],
-					[1230,1230,1230,1230,1240,1230,1230,1230,1230],
-					[1250,1240,1230,1230,1240,1230,1230,1240,1250],
+					[1230,1230,1230,1240,1240,1240,1230,1230,1230],
+					[1230,1230,1230,1240,1240,1240,1230,1230,1230],
+					[1250,1240,1230,1250,1240,1250,1230,1240,1250],
 					],
 
 				ma: [
@@ -425,8 +425,8 @@ var AI = {
 			};
 			
 			score = 0;
-			Kpos = {};
-			kpos = {};
+			Kpos = {r:-1,c:-1};
+			kpos = {r:-1,c:-1};
 			for(var r = 0; r<10;r++){
 				for(var c = 0; c<9;c++){
 					chess = board[r][c];
@@ -450,7 +450,7 @@ var AI = {
 
 			// 将帅见面，谁刚走谁输
 			if(Math.abs(score)>9000) return score;
-			if(Kpos.c == kpos.c){
+			if(Kpos.c > 0 && kpos.c > 0 && Kpos.c == kpos.c){
 				if(countChess(board, kpos, Kpos)==2 ){
 					if(last_player_id == ai.myplayer_id){
 						score = MIN_SCORE;

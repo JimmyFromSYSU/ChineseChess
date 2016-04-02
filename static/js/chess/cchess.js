@@ -14,7 +14,7 @@ function countChess(board, p1, p2) {
     var cnt = 0;
     var r = p1.r;
     var c = p1.c;
-
+	
     while (r != p2.r || c != p2.c) {
         if (board[r][c] != null) cnt++;
         if (p2.r > r) r++;
