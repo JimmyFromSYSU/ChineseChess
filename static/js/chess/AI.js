@@ -249,10 +249,10 @@ var AI = {
 		ai.eatStack = [];
 
 		ai.Search = function(board, player_id, deep, now_best){
-			var b_str = ai.toString();
-			result = ai.set[b_str]
-			if(result) return result; 
-
+			//var b_str = ai.toString();
+			//result = ai.set[b_str]
+			//if(result) return result; 
+			
 			//
 			//console.log("ai belong to: " + ai.myplayer_id+  " player_id: "+ player_id + " deep: " + deep);
 			var flag = (player_id != ai.myplayer_id?true:false);
@@ -288,9 +288,7 @@ var AI = {
 				}
 				else {
 					score = ai.evaluate(board, player_id);
-					//console.log("more score: "  + score);
 					if(Math.abs(score) < 9000){
-						//console.log("more more");
 						result = ai.Search(ai.board, 1-player_id, deep-1, best_score);
 						score = result.score;
 					}
@@ -310,17 +308,17 @@ var AI = {
 				\***********************************/
 				if(flag && now_best > best_score) {
 					result =  {score: best_score, step: best_id>=0?steps[best_id]:null};	
-					ai.set[b_str] = result;
+				//	ai.set[b_str] = result;
 					return result;
 				}
 				else if(!flag && now_best < best_score){
 					result =  {score: best_score, step: best_id>=0?steps[best_id]:null};	
-					ai.set[b_str] = result;
+				//	ai.set[b_str] = result;
 					return result;
 				}
 			}
 			result =  {score: best_score, step: best_id>=0?steps[best_id]:null};	
-			ai.set[b_str] = result;
+			//ai.set[b_str] = result;
 			return result;
 		}
 	
@@ -356,7 +354,7 @@ var AI = {
 				xiang: [
 					[0   ,0   ,210 ,0   ,0   ,0   ,210 ,0   ,0   ],
 					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
-					[150 ,0   ,0   ,0   ,250 ,0   ,0   ,0   ,150 ],
+					[150 ,0   ,0   ,0   ,260 ,0   ,0   ,0   ,150 ],
 					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
 					[0   ,0   ,150 ,0   ,0   ,0   ,150 ,0   ,0   ],
 					[0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ],
@@ -397,7 +395,7 @@ var AI = {
 				ma: [
 					[450 ,500 ,500 ,480 ,470 ,480 ,500 ,500 ,450 ],
 					[450 ,510 ,510 ,470 ,480 ,470 ,510 ,510 ,450 ],
-					[500 ,500 ,500 ,510 ,500 ,510 ,500 ,500 ,500 ],
+					[500 ,500 ,530 ,510 ,500 ,510 ,530 ,500 ,500 ],
 					[500 ,520 ,520 ,510 ,500 ,510 ,520 ,520 ,500 ],
 					[500 ,530 ,540 ,530 ,520 ,530 ,540 ,530 ,500 ],
 
