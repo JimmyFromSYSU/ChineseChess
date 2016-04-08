@@ -79,7 +79,11 @@ var UI_Player = {
 		}
 
 
-		player.finish = function(winner){}
+		player.finish = function(winner){
+			game.UI_playing = false;
+			player.now_move = false;
+			player.flag = false;
+		}
 
 		return player;
 	}
@@ -142,3 +146,86 @@ var AI_Player = {
 	//document.getElementById("demo").innerHTML = xhttp.responseText;
 	//console.log(xhttp.responseText);
 	//
+	
+
+/***********************************\
+ * 五子棋 UI player
+\***********************************/
+var fUI_Player = {
+	createNew: function(player_id){
+
+		var player = Player.createNew(player_id);
+		
+		player.flag = false;
+
+		player.prepare = function(game){
+			myControl = function(e){
+
+				if(player.now_move == false) return;
+				if(game.UI_playing == false) return;
+
+				var now  = game.getClickPos( {x:e.offsetX, y:e.offsetY}, cell_size/2);
+				c = game.getChess(now);
+				if(c == null){
+					game.step = {};
+
+					game.step.player_id = player_id;
+					game.step.to = now;
+
+					game.UI_playing = false;
+					player.now_move = false;
+					document.dispatchEvent(game.StartMoveEvent);
+				}
+/*
+				// 选择第二颗子
+				if(player.flag == true){
+					
+					if(c && c.player_id == player.player_id){
+						game.step.from = now;
+						game.setChessTo(game.box, now);
+					}
+					else{
+						game.UI_playing = false;
+						player.flag = false;
+						game.step.to = now;
+						player.now_move = false;
+						document.dispatchEvent(game.StartMoveEvent);
+					}
+				}
+				// 选择第一颗子
+				else{
+					if(c == null || c.player_id != player.player_id){
+						game.hide(game.box);	
+						player.flag = false;
+					}
+					else{
+						game.step.from = now;
+						game.setChessTo(game.box, now);
+						player.flag = true;
+					}
+				}
+*/
+			}
+
+			game.sprite.bind('MouseUp', myControl);
+		};
+
+
+		player.moveOnce = function(game){
+			game.UI_playing = true;
+			player.now_move = true;
+			//player.flag = false;
+		}
+
+
+		player.finish = function(winner){
+			game.UI_playing = false;
+			player.now_move = false;
+			if(winner.id == player_id){
+				alert( (player_id == 0? "黑棋":"白棋") + "赢了！");
+			}
+		}
+
+		return player;
+	}
+}

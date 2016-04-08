@@ -26,7 +26,7 @@ var SquareChessGame = {
 		\***********************************/
 		box_img_file = img_dir + "/chess/box.png";
 		box2_img_file = img_dir + "/chess/box2.png";
-		board_img_file = img_dir + "/board/cboard.png";
+		board_img_file = img_dir + "/board/board.png";
 		chess_img_dir = img_dir + "/chess/";
 
 		/***********************************\
