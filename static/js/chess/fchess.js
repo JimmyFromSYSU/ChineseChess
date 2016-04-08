@@ -175,6 +175,17 @@ var FiveChessGame = {
 						if(cnt < 5){
 							cnt = 1;
 							while(cnt < 5){
+								if(inRegion({r:r+cnt,c:c}, {r:0,c:0}, {w:15,h:15}) 
+									&& board[r+cnt][c] && board[r+cnt][c].player_id == board[r][c].player_id){
+										cnt++;
+									}
+								else break;
+							}
+						}
+
+						if(cnt < 5){
+							cnt = 1;
+							while(cnt < 5){
 								if(inRegion({r:r+cnt,c:c+cnt}, {r:0,c:0}, {w:15,h:15}) 
 									&& board[r+cnt][c+cnt] && board[r+cnt][c+cnt].player_id == board[r][c].player_id){
 										cnt++;
