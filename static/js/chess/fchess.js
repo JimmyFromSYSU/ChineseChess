@@ -131,7 +131,7 @@ var FiveChessGame = {
             //var eat_chess = game.getChess(step.to);
 			color =(step.player_id==0?'b':'w');
 			img_file = chess_img_dir + color + ".png";
-			type = "n";
+			type = color;
 			r = step.to.r;
 			c = step.to.c;
             new_chess = FiveChess.createNew(chess_img_size, img_file, chess_size, "棋子", type, step.player_id, 0, 0, 1);
@@ -287,7 +287,7 @@ var FiveChessGame = {
                     } else continue;
 
                     //type = game.getChessType(ch);
-					type = "n";
+					type = color;
 					img_file = chess_img_dir + color + ".png";
                     //img_file = chess_img_dir + color + "_" + type + ".png";
                     new_chess = FiveChess.createNew(chess_img_size, img_file, chess_size, "棋子", type, player_id, 0, 0, 1);

@@ -229,3 +229,40 @@ var fUI_Player = {
 		return player;
 	}
 }
+
+/***********************************\
+ * 五子棋AI player
+\***********************************/
+var fAI_Player = {
+	createNew: function(player_id){
+		var player = Player.createNew(player_id);
+
+		player.prepare = function(game){
+			player.ai = fAI.createNew();
+		};
+
+		player.moveOnce = function(game){
+			player.now_move = true;
+			player.game = game;
+			// 
+			initStr = game.toString();
+			player.ai.findBestNextStep(initStr,player.player_id, game, player.finishStep);
+		}
+
+		player.finishStep = function(){
+			player.now_move = false;
+			document.dispatchEvent(player.game.StartMoveEvent);
+		}
+		
+
+		player.finish = function(winner){
+			player.now_move = false;
+			if(winner.id == player_id){
+				alert( (player_id == 0? "黑棋":"白棋") + "赢了！");
+			}
+		}
+
+		return player;
+	}
+}
+

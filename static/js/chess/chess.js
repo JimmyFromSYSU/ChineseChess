@@ -163,6 +163,7 @@ var SquareChessGame = {
 			if (game.checkMove(game.step, players[now_player_cnt].player_id) == true) {
 				game.moveOnce(game.step);
 			} else {
+				alert("error move: " + game.step);
 				players[now_player_cnt].moveOnce(game);
 			}
 		}
@@ -175,7 +176,7 @@ var SquareChessGame = {
 			players[now_player_cnt].moveOnce(game);
 			game.winner = game.checkWin();
 			if (game.winner.id != NOT_GAMEOVER) {
-				console.log("game over");
+				console.log("game over: " + game.winner.id);
 				document.dispatchEvent(game.GameOverEvent);
 			}
 		}
