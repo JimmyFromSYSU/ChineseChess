@@ -201,6 +201,7 @@ var SquareChessGame = {
 		// 游戏胜者
 		game.winner = {};
 		NOT_GAMEOVER = -2
+		game.winner.id = NOT_GAMEOVER;
 			// 检查游戏是否结束，返回一个winner, 
 			// winner.id为胜者，
 			// =-1：游戏平局

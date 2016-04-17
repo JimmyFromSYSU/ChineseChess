@@ -14,6 +14,7 @@
 
 ## 五子棋副本
 * 五子棋人人对战：[人人对战](http://htmlpreview.github.io/?https://raw.githubusercontent.com/JimmyFromSYSU/ChineseChessUI_Javascript/master/fUIUI.html)  
+* 五子棋人机对战（调试中）：[人机对战](http://htmlpreview.github.io/?https://raw.githubusercontent.com/JimmyFromSYSU/ChineseChessUI_Javascript/master/fUIAI.html) 
 
 
 ## 已完成功能

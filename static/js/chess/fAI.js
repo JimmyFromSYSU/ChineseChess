@@ -31,14 +31,14 @@ var fAI = {
 			var c_next = ai.chess_cnt[now_char=='b'?'w':'b'];
 			var c_empty = 6-c_now-c_next;
 		
-			if(c_now == 6) return MAX_SCORE*2;  	
+			if(c_now == 6) return MAX_SCORE;  	
 			else if(c_now==5){
-				if(ai.block[0]!=now_char || ai.block[5]!=now_char) return MAX_SCORE*2;
+				if(ai.block[0]!=now_char || ai.block[5]!=now_char) return MAX_SCORE;
 				else if(c_empty>0) return 1000;		// 1 move win
 				else return 40;						// no use
 			}
 			else if(c_now==4){
-				if(ai.block[0]=='0' && ai.block[5] =='0') return 2000;	
+				if(ai.block[0]=='0' && ai.block[5] =='0') return 1000;	
 				return ( c_now - c_next ) * 200;
 			}
 			else if(c_now==3){
@@ -104,8 +104,6 @@ var fAI = {
 			var now_c = (ai.root_player_id == 0?'b':'w');
 
 			for(var t = 0;t<4;t++){
-				//if(!(r >= r_start[t] && r<r_end[t] && c >= c_start[t] && c < c_end[t])) continue;
-				
 				for(var i = 1; i< 6;i++){
 					r = pos.r - dr[t] * i;
 					c = pos.c - dc[t] * i;
@@ -131,9 +129,17 @@ var fAI = {
 
 					var old_score = ai.evaluateOneBlock(now_c);
 					old_score -= ai.evaluateOneBlock(now_c=='b'?'w':'b');
-
+					
+					var old = ai.score[r][c];
 					ai.score[r][c] += score-old_score;
-					ai.sum_score += score-old_score;
+					
+					var now = ai.score[r][c];
+					if(now > MAX_SCORE) now = MAX_SCORE;
+					if(now < MIN_SCORE) now = MIN_SCORE;
+					ai.score[r][c] = now;
+
+					//ai.sum_score += score-old_score;
+					ai.sum_score += now-old;
 					//ai.sum_score += ai.updateScore({r:r,c:c});
 				}
 			}	
@@ -359,7 +365,7 @@ var fAI = {
 			return result;
 		}
 
-		
+/*		
 
 		ai.evaluate = function(board, last_player_id){
 
@@ -397,7 +403,7 @@ var fAI = {
 			//console.log("final score: " + score);
 			return score;
 		}
-
+*/
         return ai;
     }
 }

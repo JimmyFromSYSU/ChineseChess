@@ -174,6 +174,7 @@ var fUI_Player = {
 
 					game.UI_playing = false;
 					player.now_move = false;
+					if(game.winner.id==-2)
 					document.dispatchEvent(game.StartMoveEvent);
 				}
 /*
@@ -251,6 +252,7 @@ var fAI_Player = {
 
 		player.finishStep = function(){
 			player.now_move = false;
+			if(player.game.winner.id==-2)
 			document.dispatchEvent(player.game.StartMoveEvent);
 		}
 		
