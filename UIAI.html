@@ -19,7 +19,7 @@
 
     <script>
         // 外部的调用代码
-        window.onload = function()
+        function __startChineseChess()
         {
             var game = ChineseChessGame.createNew(
                 area = "game", // 游戏的显示区域
@@ -49,8 +49,18 @@
             // 如果只希望显示棋盘和棋子布局而不加入游戏流程，使用game.show() (仍在开发中)
             // 可以多个游戏可以各自show一次，互不影响。
             game.run();
+        }
 
-        };
+        // 一些静态预览服务（如 htmlpreview.github.io）是异步抓取本页面内容后
+        // 再注入到已经加载完成的外层文档里的，这时 document.readyState 已经是
+        // "complete"，浏览器的 load 事件早就触发过了，window.onload 赋值再也
+        // 不会被调用。这里改为主动判断 readyState，已经 complete 就直接启动，
+        // 否则退回正常的 load 事件监听。
+        if (document.readyState === "complete") {
+            __startChineseChess();
+        } else {
+            window.addEventListener("load", __startChineseChess);
+        }
     </script>
 
 </body>
